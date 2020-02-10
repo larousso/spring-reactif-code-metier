@@ -1,0 +1,5 @@
+spring:
+  jackson:
+    default-property-inclusion: NON_ABSENT
+    serialization:
+      write-dates-as-timestamps: false
