@@ -3,11 +3,12 @@ package app.domains.superheroes;
 import app.domains.abilities.Ability;
 import app.domains.weakness.Weakness;
 import io.vavr.collection.List;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 @Builder(toBuilder = true)
-@Value
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
 public class Superhero {
 
     public final String id;
