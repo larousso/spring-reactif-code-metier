@@ -12,3 +12,28 @@ Dans cette session je vous présenterai un pattern inspiré de l'api de "zio" (p
 A la fin on obtiendra du code typesafe, robuste, lisible. Le code objet procédurale n'a qu'a bien se tenir !!!
 ```
 
+## Démarrer l'application 
+
+```
+./gradlew bootRun
+```
+
+## Appeler l'api
+
+Une erreur retounée 
+```bash
+curl -XPOST http://localhost:8080/api/helps/_command -H 'Content-Type: application/json' -d '{"name":"superman","problem":"FellIntoWater"}' --include
+```
+Une erreur retounée 
+```bash
+curl -XPOST http://localhost:8080/api/helps/_command -H 'Content-Type: application/json' -d '{"name":"luffy","problem":"CarAccident"}' --include
+```
+
+Plusieurs erreurs retounées 
+```bash
+curl -XPOST http://localhost:8080/api/helps/_command -H 'Content-Type: application/json' -d '{"name":"luffy","problem":"FellIntoWater"}' --include
+```
+Cas ok 
+```bash
+curl -XPOST http://localhost:8080/api/helps/_command -H 'Content-Type: application/json' -d '{"name":"luffy","problem":"SuperVilain"}' --include
+```
