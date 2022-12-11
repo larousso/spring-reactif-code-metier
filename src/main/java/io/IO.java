@@ -1,7 +1,15 @@
 package io;
 
-import app.Unit;
-import io.vavr.*;
+import io.vavr.API;
+import io.vavr.Function3;
+import io.vavr.Function4;
+import io.vavr.Function5;
+import io.vavr.Tuple;
+import io.vavr.Tuple0;
+import io.vavr.Tuple2;
+import io.vavr.Tuple3;
+import io.vavr.Tuple4;
+import io.vavr.Tuple5;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
@@ -14,8 +22,17 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static io.vavr.API.*;
-import static io.vavr.Patterns.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Left;
+import static io.vavr.API.List;
+import static io.vavr.API.Match;
+import static io.vavr.API.Right;
+import static io.vavr.API.Seq;
+import static io.vavr.API.Tuple;
+import static io.vavr.Patterns.$Left;
+import static io.vavr.Patterns.$Right;
+import static io.vavr.Patterns.$Tuple2;
 
 public class IO<E, A> {
 
@@ -68,20 +85,20 @@ public class IO<E, A> {
         return new IO<>(Mono.just(option.toEither(ifEmpty)));
     }
 
-    public static <A> IO<Unit, A> fromOption(Option<A> option) {
-        return new IO<>(Mono.just(option.toEither(Unit::unit)));
+    public static <A> IO<Tuple0, A> fromOption(Option<A> option) {
+        return new IO<>(Mono.just(option.toEither(() -> Tuple.empty())));
     }
 
-    public static <E> IO<E, Unit> when(Boolean toCheck, Supplier<IO<E, ?>> errorIfTrue) {
+    public static <E> IO<E, Tuple0> when(Boolean toCheck, Supplier<IO<E, ?>> errorIfTrue) {
         if (toCheck) {
-            return errorIfTrue.get().map(__ -> Unit.unit());
+            return errorIfTrue.get().map(__ -> Tuple.empty());
         } else {
-            return IO.succeed(Unit.unit());
+            return IO.succeed(Tuple.empty());
         }
     }
 
-    public static <E> IO<E, Unit> unitIO() {
-        return IO.succeed(Unit.unit());
+    public static <E> IO<E, Tuple0> unit() {
+        return IO.succeed(Tuple.empty());
     }
 
     public static <E, A> IO<E, Seq<A>> sequence(Seq<IO<E, A>> seq) {
@@ -118,10 +135,10 @@ public class IO<E, A> {
 
     public static class ValidateBuilder<E> {
 
-        private final List<IO<E, Unit>> iOs;
+        private final List<IO<E, Tuple0>> iOs;
 
         public ValidateBuilder(List<IO<E, ?>> iOs) {
-            this.iOs = iOs.map(io -> io.map(___ -> Unit.unit()));
+            this.iOs = iOs.map(io -> io.map(___ -> Tuple.empty()));
         }
 
         public <A> IO<Seq<E>, A> andReturn(Supplier<A> res) {
@@ -219,11 +236,11 @@ public class IO<E, A> {
         return parZip(io1, io2, io3, (r1, r2, r3) -> Tuple(r1, r2, r3));
     }
 
-    public IO<E, Unit> unit() {
-        return this.map(__ -> Unit.unit());
+    public IO<E, Tuple0> then() {
+        return this.map(__ -> Tuple.empty());
     }
 
-    public <E1> IO<E1, A> refine() {
+    public <E1> IO<E1, A> downcast() {
         return this.mapError(e -> (E1)e);
     }
 
@@ -244,7 +261,7 @@ public class IO<E, A> {
         return new IO<>(this.underlying.map(either -> either.mapLeft(function)));
     }
 
-    public IO<E, A> doOnSuccess(Function<A, Mono<Unit>> consumer) {
+    public IO<E, A> doOnSuccess(Function<A, Mono<Tuple0>> consumer) {
         return new IO<>(this.underlying.flatMap(either ->
             either.fold(
                     err -> Mono.just(Either.left(err)),
@@ -253,7 +270,7 @@ public class IO<E, A> {
         ));
     }
 
-    public IO<E, A> doOnError(Function<E, Mono<Unit>> consumer) {
+    public IO<E, A> doOnError(Function<E, Mono<Tuple0>> consumer) {
         return new IO<>(this.underlying.flatMap(either ->
             either.fold(
                     err -> consumer.apply(err).map(__ -> Either.left(err)),

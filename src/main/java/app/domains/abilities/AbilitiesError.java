@@ -2,12 +2,10 @@ package app.domains.abilities;
 
 import app.error.AppError;
 
-public interface AbilitiesError extends AppError {
-
-    class AbilityUnmatch implements AbilitiesError {
-        @Override
-        public String message() {
-            return "Couldn't find the required ability for your problem";
+public sealed interface AbilitiesError extends AppError {
+    record AbilityUnmatch(String message) implements AbilitiesError {
+        public AbilityUnmatch() {
+            this("Couldn't find the required ability for your problem");
         }
     }
 }

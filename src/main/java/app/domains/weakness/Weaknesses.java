@@ -1,9 +1,10 @@
 package app.domains.weakness;
 
-import io.IO;
-import app.Unit;
 import app.domains.superheroes.Superhero;
 import app.entities.Problem;
+import io.IO;
+import io.vavr.Tuple;
+import io.vavr.Tuple0;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -19,14 +20,14 @@ public class Weaknesses {
             Problem.SuperVilain,  List.of(Weakness.TooNice, Weakness.Cryptonic, Weakness.Borderline)
     );
 
-    public IO<WeaknessesError, Unit> checkWeaknesses(Superhero superhero, Problem problem) {
+    public IO<WeaknessesError, Tuple0> checkWeaknesses(Superhero superhero, Problem problem) {
 
         List<Weakness> requiredWeaknesses = IA.getOrElse(problem, List.empty());
         List<Weakness> superheroWeaknesses = superhero.weaknesses;
 
         List<Weakness> usableWeaknesses = superheroWeaknesses.filter(requiredWeaknesses::contains);
         if (usableWeaknesses.isEmpty()) {
-            return IO.unitIO();
+            return IO.unit();
         } else {
             return IO.error(new WeaknessesError.WeaknessMatchError(usableWeaknesses));
         }

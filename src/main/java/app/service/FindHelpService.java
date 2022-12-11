@@ -1,5 +1,6 @@
 package app.service;
 
+import app.domains.superheroes.SuperheroError;
 import io.IO;
 import app.command.AskForHelp;
 import app.domains.abilities.Abilities;
@@ -31,11 +32,11 @@ public class FindHelpService {
 
     public IO<HelpErrors, HelpResult> findHelp(AskForHelp askForHelp) {
         return this.superHeroes.lookForSuperhero(askForHelp.name)
-            .mapError(HelpErrors::fromSuperheroErrors)
+            .mapError(HelpErrors::fromSuperheroError)
             .flatMap(superhero ->
                     IO.parZip(
-                            abilities.checkAbilities(superhero, askForHelp.problem).<AppError>refine(),
-                            weaknesses.checkWeaknesses(superhero, askForHelp.problem).<AppError>refine(),
+                            abilities.checkAbilities(superhero, askForHelp.problem).<AppError>downcast(),
+                            weaknesses.checkWeaknesses(superhero, askForHelp.problem).<AppError>downcast(),
                             (abilities, __) -> HelpResult.builder()
                                     .hero(superhero)
                                     .matchingAbilities(abilities)
@@ -60,6 +61,9 @@ public class FindHelpService {
 
         public static HelpErrors fromSuperheroErrors(SuperheroErrors errors) {
             return new HelpErrors(errors.errors.map(e -> (AppError) e));
+        }
+        public static HelpErrors fromSuperheroError(SuperheroError error) {
+            return new HelpErrors(List.<AppError>of(error));
         }
     }
 }

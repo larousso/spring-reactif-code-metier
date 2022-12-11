@@ -3,6 +3,7 @@ package app.domains.superheroes;
 import io.IO;
 import app.domains.superheroes.SuperheroError.SuperheroUnavailable;
 import app.domains.superheroes.SuperheroError.SuperheroUnknown;
+import io.vavr.control.Option;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,11 +15,11 @@ public class SuperHeroes {
         this.superheroRepository = superheroRepository;
     }
 
-    public IO<SuperheroErrors, Superhero> lookForSuperhero(String name) {
-        return IO.fromMono(superheroRepository.findByName(name), SuperheroErrors.class)
+    public IO<SuperheroError, Superhero> lookForSuperhero(String name) {
+        return IO.<SuperheroError, Option<Superhero>>fromMono(superheroRepository.findByName(name))
                 .flatMap(mayBeSuperHero ->
-                        IO.fromOption(mayBeSuperHero, () -> SuperheroErrors.of(new SuperheroUnknown(name)))
+                        IO.fromOption(mayBeSuperHero, () -> new SuperheroUnknown(name))
                 )
-                .filter(hero -> hero.isAvailable, () -> SuperheroErrors.of(new SuperheroUnavailable(name)));
+                .filter(hero -> hero.isAvailable, () -> new SuperheroUnavailable(name));
     }
 }

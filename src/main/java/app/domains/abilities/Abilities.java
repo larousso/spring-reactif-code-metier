@@ -1,5 +1,6 @@
 package app.domains.abilities;
 
+import app.domains.abilities.AbilitiesError.AbilityUnmatch;
 import io.IO;
 import app.domains.superheroes.Superhero;
 import app.entities.Problem;
@@ -18,14 +19,14 @@ public class Abilities {
             Problem.SuperVilain, List.of(Ability.LazerEyes, Ability.IronBody, Ability.ElasticBody)
     );
 
-    public IO<AbilitiesError, List<Ability>> checkAbilities(Superhero superhero, Problem problem) {
+    public IO<AbilityUnmatch, List<Ability>> checkAbilities(Superhero superhero, Problem problem) {
 
         List<Ability> requiredAbilities = IA.getOrElse(problem, List.empty());
         List<Ability> superheroAbilities = superhero.abilities;
 
         List<Ability> usableAbilities = superheroAbilities.filter(requiredAbilities::contains);
         if (usableAbilities.isEmpty()) {
-            return IO.error(new AbilitiesError.AbilityUnmatch());
+            return IO.error(new AbilityUnmatch());
         } else {
             return IO.succeed(usableAbilities);
         }

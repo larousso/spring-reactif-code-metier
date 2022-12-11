@@ -6,16 +6,11 @@ import lombok.Value;
 
 import java.text.MessageFormat;
 
-public interface WeaknessesError extends AppError {
+public sealed interface WeaknessesError extends AppError {
 
-    @Value
-    class WeaknessMatchError implements WeaknessesError {
-
-        public final List<Weakness> weaknesses;
-
-        @Override
-        public String message() {
-            return MessageFormat.format("Weaknesses found : {0}", weaknesses.mkString("[", "","]"));
+    record WeaknessMatchError(String message, List<Weakness> weaknesses) implements WeaknessesError {
+        public WeaknessMatchError(List<Weakness> weaknesses) {
+            this(MessageFormat.format("Weaknesses found : {0}", weaknesses.mkString("[", "","]")), weaknesses);
         }
     }
 
