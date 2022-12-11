@@ -68,7 +68,7 @@ L'utilisation d'`Either` devient intéressante quand on a un nombre important de
 Dans le monde reactif, on perd complétement la notion de checked exception. 
 
 ```java
-Mono<Person> creerUnePersonne(PersonDto person);
+public Mono<Person> creerUnePersonne(PersonDto person);
 ```
 
 `reactor` offre la possibilité de catcher et de manipuler les erreurs, 
@@ -166,13 +166,13 @@ On va retrouver la même logique pour les 2 autres domaines.
 Pour les faiblesses, on veut juste checker si le superhero est vulnérable au problème à résoudre, dans ce cas seule l'erreur nous importe, on aura `Tuple0` en cas succès (un peu comme void mais instantiable) : 
 
 ```java
-IO<WeaknessesError, Tuple0> checkWeaknesses(Superhero superhero, Problem problem)
+public IO<WeaknessesError, Tuple0> checkWeaknesses(Superhero superhero, Problem problem);
 ```
 
 Pour les capacités, on va lister les capacités qui peuvent répondre au problème à résoudre 
 
 ```java
-IO<AbilityUnmatch, List<Ability>> checkAbilities(Superhero superhero, Problem problem)
+public  IO<AbilityUnmatch, List<Ability>> checkAbilities(Superhero superhero, Problem problem);
 ```
 
 Passons maintenant au service final. Dans ce service, on veut
@@ -237,6 +237,13 @@ Il ne reste plus qu'a gérer la couche http :
              );
  }
 ```
+
+#### Conclusion 
+
+J'utilise ça depuis quelques années maintenant et je trouve ça très agréable. 
+Ca demande quand même une prise en main pour les nouveaux arrivants mais ça amène un plus pour le code métier comparé à du reactor vanilla. 
+
+Si je suis courageux, j'en ferai une lib !
 
 
 ## Démarrer l'application 
